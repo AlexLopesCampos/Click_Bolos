@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { Alert, Button, Text, TouchableOpacity, View, StyleSheet } from "react-native";
+import { Alert, Button, Text, TouchableOpacity, View, StyleSheet, FlatList } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
 export default function Pedidos() {
@@ -20,6 +20,8 @@ export default function Pedidos() {
     confeiteiraId: number;
     id: number;
   } | null>(null);
+  const [pedidos, setPedidos] = useState<any[]>([]);
+  const [pedidosPersonalizados, setPedidosPersonalizados] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchBolo = async () => {
@@ -58,6 +60,26 @@ export default function Pedidos() {
       setValorTotal(bolo.preco * quantidadeKg);
     }
   }, [quantidadeKg, bolo]);
+
+  useEffect(() => {
+    const fetchPedidos = async () => {
+      const clienteId = await AsyncStorage.getItem("clienteId");
+      if (!clienteId) return;
+
+      // Buscar pedidos normais
+      const pedidosRes = await fetch(`http://localhost:8081/cliente/${clienteId}/pedidos`);
+      const pedidosData = await pedidosRes.json();
+
+      // Buscar pedidos personalizados
+      const personalizadosRes = await fetch(`http://localhost:8081/cliente/${clienteId}/pedidos-personalizados`);
+      const personalizadosData = await personalizadosRes.json();
+
+      setPedidos(Array.isArray(pedidosData) ? pedidosData : []);
+      setPedidosPersonalizados(Array.isArray(personalizadosData) ? personalizadosData : []);
+    };
+
+    fetchPedidos();
+  }, []);
 
   const aumentarKg = () => setQuantidadeKg((prev) => prev + 1);
   const diminuirKg = () => {
@@ -127,9 +149,15 @@ export default function Pedidos() {
     }
   };
 
+  // Unir os dois arrays para exibir juntos
+  const todosPedidos = [
+    ...pedidos.map(p => ({ ...p, tipo: "normal" })),
+    ...pedidosPersonalizados.map(p => ({ ...p, tipo: "personalizado" })),
+  ];
+
   return (
     <View style={styles.container}>
-      {bolo && (
+      {bolo ? (
         <>
           <Text style={styles.titulo}>{bolo.nome}</Text>
           <Text style={styles.valor}>Preço por Kg: R$ {bolo.preco.toFixed(2)}</Text>
@@ -191,6 +219,29 @@ export default function Pedidos() {
             />
           </View>
         </>
+      ) : (
+        <>
+          <Text style={styles.titulo}>Meus Pedidos</Text>
+          <FlatList
+            data={todosPedidos}
+            keyExtractor={item => `${item.tipo}-${item.id}`}
+            renderItem={({ item }) => (
+              <View style={styles.pedidoBox}>
+                <Text style={styles.label}>
+                  Pedido Nº: <Text style={styles.valor}>{item.NumeroPedido || item.id}</Text>
+                </Text>
+                <Text style={styles.label}>
+                  Tipo: <Text style={styles.valor}>{item.tipo === "personalizado" ? "Personalizado" : "Normal"}</Text>
+                </Text>
+                <Text style={styles.label}>
+                  Status: <Text style={styles.valor}>{item.status}</Text>
+                </Text>
+                {/* Adicione mais campos conforme necessário */}
+              </View>
+            )}
+            ListEmptyComponent={<Text>Nenhum pedido encontrado.</Text>}
+          />
+        </>
       )}
     </View>
   );
@@ -204,4 +255,5 @@ const styles = StyleSheet.create({
   kgText: { fontSize: 18 },
   label: { fontSize: 16, fontWeight: "bold", marginTop: 10 },
   endereco: { marginVertical: 5, fontSize: 16 },
+  pedidoBox: { backgroundColor: "#f9f9f9", padding: 12, borderRadius: 8, marginBottom: 12 },
 });

@@ -10,6 +10,7 @@ import {
   View,
   StyleSheet,
   Dimensions,
+  TouchableOpacity,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
@@ -19,6 +20,7 @@ export default function PerfilConfeteira() {
   const { id } = useLocalSearchParams();
 
   interface Confeiteira {
+    id: number;
     imagem: string;
     nome: string;
     horarioInicio: string;
@@ -212,6 +214,23 @@ export default function PerfilConfeteira() {
         Horários: {confeiteira.horarioInicio} - {confeiteira.horarioFim}
       </Text>
       <Text style={styles.descricao}>{confeiteira.descricao}</Text>
+
+      <TouchableOpacity
+        style={{
+          backgroundColor: "#ff69b4",
+          padding: 12,
+          borderRadius: 8,
+          alignItems: "center",
+          marginVertical: 10,
+        }}
+        onPress={() => {
+          router.push(`/perfils/Usuario/(drawer)/pedidosPersonalizados?id=${confeiteira.id}`);
+        }}
+      >
+        <Text style={{ color: "#fff", fontWeight: "bold" }}>
+          Fazer Pedido Personalizado
+        </Text>
+      </TouchableOpacity>
 
       <Text style={styles.catalogoTitulo}>Catálogo:</Text>
       {catalogo.length === 0 ? (

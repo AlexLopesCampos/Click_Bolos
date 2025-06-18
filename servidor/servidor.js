@@ -406,11 +406,11 @@ app.get('/confeiteira/:id/pedidos-personalizados', async (req, res) => {
   }
 });
 
-app.get('/cliente/:id/pedidos-personalizados', async (req, res) => {
-  const { id } = req.params;
+app.get('/cliente/:clienteId/pedidos-personalizados', async (req, res) => {
+  const { clienteId } = req.params;
   try {
     const pedidos = await prisma.pedidoPersonalizado.findMany({
-      where: { clienteId: Number(id) },
+      where: { clienteId: Number(clienteId) },
       include: { confeiteira: true },
     });
     res.json(pedidos);
@@ -434,20 +434,21 @@ app.get('/cliente/:clienteId/favoritos', async (req, res) => {
   res.json(favoritos);
 })
 
-app.get('/clientes/:clienteId/pedidos', async (req, res) => {
-  const {clienteId} = req.params;
-  try{
+app.get('/cliente/:clienteId/pedidos', async (req, res) => {
+  const { clienteId } = req.params;
+  try {
     const pedidos = await prisma.pedido.findMany({
-      where: {clienteId: Number(clienteId)},
-      orderBy: {dataPedido: 'desc'},
-      include:{
+      where: { clienteId: Number(clienteId) },
+      include: {
+        itenspedido: true,
         confeiteira: true,
-      }
+      },
+      orderBy: { dataPedido: 'desc' }
     });
     res.json(pedidos);
-  }catch (error) {
+  } catch (error) {
     console.error('Erro ao buscar pedidos:', error);
-    res.status(500).json({ message: 'Erro interno do servidor' });
+    res.status(500).json({ message: 'Erro interno do servidor.' });
   }
 });
 

@@ -37,6 +37,12 @@ export default function Layout() {
         drawerItemStyle: { display: "none" }
     }}
     />
+          <Drawer.Screen
+    name="detalhePedidoPersonalizado"
+    options={{
+        drawerItemStyle: { display: "none" }
+    }}
+    />
     </Drawer>
     );
 }

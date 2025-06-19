@@ -224,7 +224,7 @@ export default function PerfilConfeteira() {
           marginVertical: 10,
         }}
         onPress={() => {
-          router.push(`/perfils/Usuario/(drawer)/pedidosPersonalizados?id=${confeiteira.id}`);
+          router.push(`/perfils/Usuario/pedidosPersonalizados?id=${confeiteira.id}`);
         }}
       >
         <Text style={{ color: "#fff", fontWeight: "bold" }}>

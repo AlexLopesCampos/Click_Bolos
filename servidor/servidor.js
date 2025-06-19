@@ -420,6 +420,27 @@ app.get('/cliente/:clienteId/pedidos-personalizados', async (req, res) => {
   }
 });
 
+app.get('/pedidos-personalizados/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const pedido = await prisma.pedidoPersonalizado.findUnique({
+      where: { id: Number(id) },
+      include: {
+        cliente: true,
+        confeiteira: true
+      }
+    });
+    if (!pedido) {
+      return res.status(404).json({ message: "Pedido não encontrado" });
+    }
+    res.json(pedido);
+  } catch (error) {
+    console.error('Erro ao buscar pedido personalizado:', error);
+    res.status(500).json({ message: 'Erro interno do servidor' });
+  }
+});
+
+
 app.get('/cliente/:clienteId/favoritos', async (req, res) => {
   const { clienteId } = req.params;
   const cliente = await prisma.cliente.findUnique({
@@ -485,7 +506,7 @@ app.get('/confeiteira/:id', async (req, res) => {
   try {
     const confeiteira = await prisma.confeiteira.findUnique({
       where: {
-        id: Number(id) // <-- Certifique-se de converter para número!
+        id: Number(id) // <-- Corrigido aqui!
       }
     });
     if (!confeiteira) {
@@ -621,6 +642,20 @@ app.put('/pedidos/:id/status', async (req, res) => {
     res.json({ ok: true });
   } catch (error) {
     console.error('Erro ao atualizar status do pedido:', error);
+    res.status(500).json({ message: 'Erro interno do servidor' });
+  }
+});
+app.put('/pedidos-personalizados/:id/status', async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+  try {
+    await prisma.pedidoPersonalizado.update({
+      where: { id: Number(id) },
+      data: { status }
+    });
+    res.json({ ok: true });
+  } catch (error) {
+    console.error('Erro ao atualizar status do pedido personalizado:', error);
     res.status(500).json({ message: 'Erro interno do servidor' });
   }
 });

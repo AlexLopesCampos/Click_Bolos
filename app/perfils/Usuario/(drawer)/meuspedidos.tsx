@@ -2,7 +2,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { use, useEffect, useState } from "react";
 import { FlatList, Pressable, Text, View, ActivityIndicator, StyleSheet, Alert, TouchableOpacity } from "react-native";
 import { Ionicons } from '@expo/vector-icons';
-import PedidosPersonalizados from "./pedidosPersonalizados";
+import { useRouter } from "expo-router";
+
 
 export default function MeusPedidos(){
     interface Pedido {
@@ -21,6 +22,7 @@ export default function MeusPedidos(){
     const [pedidos, setPedidos] = useState<Pedido[]>([]);
     const [loading, setLoading] = useState (true);
     const [clienteId, setClienteId] = useState<string | null>(null);
+    const router = useRouter();
 
     useEffect(() => {
         const fetchPedidos = async () => {
@@ -112,7 +114,14 @@ export default function MeusPedidos(){
   data={todosPedidos}
   keyExtractor={(item) => item.id.toString()}
   renderItem={({item})=>(
-    <Pressable style={styles.pedidoItem}>
+    <Pressable
+      style={styles.pedidoItem}
+      onPress={() => {
+        if (item.tipo === "personalizado") {
+          router.push(`/perfils/Usuario/(drawer)/detalhePedidoPersonalizado?id=${item.id}`);
+        }
+      }}
+    >
       <Text style={styles.label}>Pedido Nº: <Text style={styles.value}>{item.NumeroPedido || item.id}</Text></Text>
       <Text style={styles.label}>Confeiteira: <Text style={styles.value}>{item.nomeConfeiteira || item.confeiteira?.nomeloja || "Desconhecida"}</Text></Text>
       <Text style={styles.label}>Data: <Text style={styles.value}>{item.dataPedido ? new Date(item.dataPedido).toLocaleDateString() : ""}</Text></Text>

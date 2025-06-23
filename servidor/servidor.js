@@ -224,18 +224,20 @@ app.post('/confeiteira/:id/bolo', upload.single('imagem'), async (req, res) => {
   let imagemPath = req.file ? `/uploads/${req.file.filename}` : undefined;
 
   try {
-    const novoBolo = await prisma.bolo.create({
-      data: {
-        nome,
-        descricao,
-        preco: parseFloat(preco),
-        peso: parseFloat(peso),
-        sabor,
-        tipo,
-        imagem: imagemPath,
-        confeiteiraId: Number(id)
-      }
-    });
+    // Exemplo
+const confeiteiraId = Number(req.body.confeiteiraId);
+
+const novoBolo = await prisma.bolo.create({
+  data: {
+    nome: req.body.nome,
+    descricao: req.body.descricao,
+    preco: Number(req.body.preco),
+    peso: Number(req.body.peso),
+    sabor: req.body.sabor,
+    imagem: imagemPath,
+    confeiteiraId: confeiteiraId, // aqui sempre número!
+  }
+});
     res.status(201).json(novoBolo);
   } catch (error) {
     console.error('Erro ao cadastrar bolo:', error);
@@ -342,14 +344,11 @@ app.post('/pedidos', async (req, res) => {
     pagamento,
     confeiteiraId,
     clienteId,
-    itens, // <-- Recebendo os itens do pedido
+    itens // array de itens do pedido
   } = req.body;
-  if(!NumeroPedido || !endereco || !dataPedido || !valorTotal || !status || !pagamento || !confeiteiraId || !clienteId || !itens) {
-    return res.status(400).json({ message: 'Preencha todos os campos obrigatórios.' });
-  }
 
   try {
-    // Buscar o nome da loja da confeiteira
+    // Busca a confeiteira no banco
     const confeiteira = await prisma.confeiteira.findUnique({
       where: { id: Number(confeiteiraId) }
     });
@@ -357,18 +356,19 @@ app.post('/pedidos', async (req, res) => {
       return res.status(404).json({ message: 'Confeiteira não encontrada.' });
     }
 
+    // Cria o pedido preenchendo nomeConfeiteira e nomeloja com os dados do banco
     const novoPedido = await prisma.pedido.create({
       data: {
         NumeroPedido,
-        nomeConfeiteira: confeiteira.nome, // ou confeiteira.nome se quiser o nome da confeiteira
-        nomeloja: confeiteira.nomeloja,    // <-- Pega do banco
+        nomeConfeiteira: confeiteira.nome,
+        nomeloja: confeiteira.nomeloja,
         endereco,
-        dataPedido,
+        dataPedido: new Date(dataPedido),
         valorTotal,
         status,
         pagamento,
-        confeiteiraId,
-        clienteId,
+        confeiteiraId: Number(confeiteiraId),
+        clienteId: Number(clienteId),
         itenspedido: {
           create: itens.map(item => ({
             boloId: item.boloId,
@@ -455,20 +455,20 @@ app.get('/cliente/:clienteId/favoritos', async (req, res) => {
   res.json(favoritos);
 })
 
-app.get('/cliente/:clienteId/pedidos', async (req, res) => {
-  const { clienteId } = req.params;
+app.get('/clientes/:id/pedidos', async (req, res) => {
+  const { id } = req.params;
   try {
     const pedidos = await prisma.pedido.findMany({
-      where: { clienteId: Number(clienteId) },
+      where: { clienteId: Number(id) },
       include: {
-        itenspedido: true,
         confeiteira: true,
+        itenspedido: true
       },
       orderBy: { dataPedido: 'desc' }
     });
     res.json(pedidos);
   } catch (error) {
-    console.error('Erro ao buscar pedidos:', error);
+    console.error('Erro ao buscar pedidos do cliente:', error);
     res.status(500).json({ message: 'Erro interno do servidor.' });
   }
 });

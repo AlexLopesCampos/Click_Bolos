@@ -68,6 +68,12 @@ export default function AdicionarBolos() {
     formData.append("preco", valorBolo);
     formData.append("peso", pesoBolo);
     formData.append("sabor", saborBolo);
+    const confeiteiraId = Array.isArray(id) ? id[0] : id;
+    if (!confeiteiraId || isNaN(Number(confeiteiraId))) {
+      alert("ID da confeiteira inválido!");
+      return;
+    }
+    formData.append("confeiteiraId", confeiteiraId.toString());
 
     if (Platform.OS === "web") {
       if (imagemArquivo) {

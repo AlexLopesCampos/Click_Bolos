@@ -7,8 +7,7 @@ export default function Index() {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>🎂 Bem-vindo! Faça seu login ou se registre 🧁</Text>
-            <Text style={styles.subtitle}>Venha fazer parte da CLICK BOLOS</Text>
+            <Text style={styles.title}>🎂 Bem-vindo! Faça seu login</Text>
 
             <TouchableOpacity style={styles.button} onPress={() => router.push('/Registros/Login_Confeiteira')}>
                 <Text style={styles.buttonText}>Confeiteira</Text>
@@ -18,9 +17,9 @@ export default function Index() {
                 <Text style={styles.buttonText}>Cliente</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={[styles.button, styles.secondaryButton]} onPress={() => router.push('/Registros/Registro')}>
+            {/* <TouchableOpacity style={[styles.button, styles.secondaryButton]} onPress={() => router.push('/Registros/Registro')}>
                 <Text style={styles.buttonText}>Registrar</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
         </View>
     );
 }

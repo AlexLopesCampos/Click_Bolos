@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, StyleSheet, Button, Pressable } from "react-native";
+import { View, Text, FlatList, StyleSheet, Button, Pressable, TouchableOpacity } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 
@@ -94,53 +94,95 @@ async function atualizarStatus(pedidoId: number, novoStatus: string, tipo: "norm
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, backgroundColor: "#fff" },
-  titulo: { fontSize: 22, fontWeight: "bold", marginBottom: 16 },
-  pedidoItem: {
-    backgroundColor: "#f9f9f9",
+  container: {
+    flex: 1,
     padding: 16,
+    backgroundColor: "#FFF0F5", // Fundo rosa claro
+  },
+  titulo: {
+    fontSize: 22,
+    fontWeight: "bold",
+    marginBottom: 16,
+    color: "#8B4513", // Marrom chocolate
+    textAlign: "center",
+  },
+  pedidoBox: {
+    backgroundColor: "#FADADD", // Rosa claro
+    padding: 12,
     borderRadius: 8,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: "#eee",
+    borderColor: "#C71585", // Rosa escuro
   },
-  label: { fontWeight: "bold" },
-  value: { fontWeight: "normal", marginTop: 4 },
+  itemBox: {
+    marginLeft: 10,
+    marginBottom: 5,
+    backgroundColor: "#FFE4E1", // Rosa bem clarinho
+    borderRadius: 6,
+    padding: 6,
+  },
+  label: {
+    fontWeight: "bold",
+    color: "#8B4513", // Marrom chocolate
+  },
+  valor: {
+    fontWeight: "normal",
+    color: "#4B2E2E", // Marrom escuro
+  },
+  pendente: { color: "#C71585" }, // Rosa escuro
+  producao: { color: "#D2691E" }, // Marrom médio
+  entregue: { color: "#28a745" }, // Verde
+  cancelado: { color: "#B22222" }, // Vermelho queimado
+  voltarBtn: {
+    backgroundColor: "#C71585", // Rosa escuro
+    paddingVertical: 6,
+    paddingHorizontal: 18,
+    borderRadius: 20,
+    alignSelf: "flex-start",
+    marginBottom: 10,
+  },
+  voltarBtnText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 15,
+  },
 });
 
 return (
   <View style={styles.container}>
-    <Button title="Voltar" onPress={() => router.back()} />
+    <TouchableOpacity style={styles.voltarBtn} onPress={() => router.back()}>
+      <Text style={styles.voltarBtnText}>Voltar</Text>
+    </TouchableOpacity>
     <Text style={styles.titulo}>Todos os Pedidos</Text>
     <FlatList
       data={todosPedidos}
       keyExtractor={item => item.id.toString()}
       renderItem={({ item }) => (
-        <View style={styles.pedidoItem}>
+        <View style={styles.pedidoBox}>
           <Text style={styles.label}>
             {item.tipo === "personalizado" ? "Pedido Personalizado" : "Pedido Normal"}
           </Text>
           {item.tipo === "personalizado" ? (
             <>
-              <Text style={styles.value}>Massa: {item.massa}</Text>
-              <Text style={styles.value}>Recheio: {item.recheio}</Text>
-              <Text style={styles.value}>Cobertura: {item.cobertura}</Text>
-              <Text style={styles.value}>Camadas: {item.camadas}</Text>
-              <Text style={styles.value}>Topo: {item.topo ? "Sim" : "Não"}</Text>
-              <Text style={styles.value}>Observações: {item.observacoes || "Nenhuma"}</Text>
-              <Text style={styles.value}>Data Entrega: {item.dataEntrega ? new Date(item.dataEntrega).toLocaleDateString("pt-BR") : "?"}</Text>
-              <Text style={styles.value}>Hora Entrega: {item.horaEntrega}</Text>
-              <Text style={styles.value}>Cliente: {item.cliente?.nome || "Desconhecido"}</Text>
-              <Text style={styles.value}>Status: {item.status || "Pendente"}</Text>
+              <Text style={styles.valor}>Massa: {item.massa}</Text>
+              <Text style={styles.valor}>Recheio: {item.recheio}</Text>
+              <Text style={styles.valor}>Cobertura: {item.cobertura}</Text>
+              <Text style={styles.valor}>Camadas: {item.camadas}</Text>
+              <Text style={styles.valor}>Topo: {item.topo ? "Sim" : "Não"}</Text>
+              <Text style={styles.valor}>Observações: {item.observacoes || "Nenhuma"}</Text>
+              <Text style={styles.valor}>Data Entrega: {item.dataEntrega ? new Date(item.dataEntrega).toLocaleDateString("pt-BR") : "?"}</Text>
+              <Text style={styles.valor}>Hora Entrega: {item.horaEntrega}</Text>
+              <Text style={styles.valor}>Cliente: {item.cliente?.nome || "Desconhecido"}</Text>
+              <Text style={styles.valor}>Status: {item.status || "Pendente"}</Text>
             </>
           ) : (
             <>
-              <Text style={styles.value}>Nº Pedido: {item.NumeroPedido}</Text>
-              <Text style={styles.value}>Status: {item.status}</Text>
-              <Text style={styles.value}>Data: {item.dataPedido ? new Date(item.dataPedido).toLocaleString("pt-BR") : "?"}</Text>
-              <Text style={styles.value}>Cliente: {item.cliente?.nome || "Desconhecido"}</Text>
-              <Text style={styles.value}>Valor Total: R$ {item.valorTotal?.toFixed(2) ?? "?"}</Text>
-              <Text style={styles.value}>Pagamento: {item.pagamento || "Desconhecido"}</Text>
+              <Text style={styles.valor}>Nº Pedido: {item.NumeroPedido}</Text>
+              <Text style={styles.valor}>Status: {item.status}</Text>
+              <Text style={styles.valor}>Data: {item.dataPedido ? new Date(item.dataPedido).toLocaleString("pt-BR") : "?"}</Text>
+              <Text style={styles.valor}>Cliente: {item.cliente?.nome || "Desconhecido"}</Text>
+              <Text style={styles.valor}>Valor Total: R$ {item.valorTotal?.toFixed(2) ?? "?"}</Text>
+              <Text style={styles.valor}>Pagamento: {item.pagamento || "Desconhecido"}</Text>
             </>
           )}
           <View style={{ flexDirection: "row", gap: 8, marginVertical: 8 }}>
@@ -149,10 +191,10 @@ return (
                 key={status}
                 title={status}
                 color={
-                  status === "Pendente" ? "#FFA500" :
-                  status === "Em produção" ? "#007bff" :
+                  status === "Pendente" ? "#C71585" :
+                  status === "Em produção" ? "#D2691E" :
                   status === "Entregue" ? "#28a745" :
-                  status === "Cancelado" ? "#dc3545" : "#888"
+                  status === "Cancelado" ? "#B22222" : "#888"
                 }
                 onPress={() => atualizarStatus(item.id, status, item.tipo!)}
                 disabled={item.status === status}

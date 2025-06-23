@@ -2,8 +2,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { use, useEffect, useState } from "react";
 import { FlatList, Pressable, Text, View, ActivityIndicator, StyleSheet, Alert, TouchableOpacity } from "react-native";
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from "expo-router";
-
 
 export default function MeusPedidos(){
     interface Pedido {
@@ -18,33 +16,16 @@ export default function MeusPedidos(){
         };
         // add other properties as needed
     }
-    const [pedidoPersonalizado, setPedidoPersonalizado] = useState<any[]>([]);
+
     const [pedidos, setPedidos] = useState<Pedido[]>([]);
     const [loading, setLoading] = useState (true);
     const [clienteId, setClienteId] = useState<string | null>(null);
-    const router = useRouter();
 
     useEffect(() => {
-        const fetchPedidos = async () => {
-        const clienteId = await AsyncStorage.getItem("clienteId");
-        if (!clienteId) return;
-
-        const pedidosRes = await fetch(`http://localhost:8081/cliente/${clienteId}/pedidos`);
-        const pedidosData = await pedidosRes.json();
-
-        const personalizadoRes = await fetch(`http://localhost:8081/cliente/${clienteId}/pedidos-personalizados`);
-        const personalizadoData = await personalizadoRes.json();
-
-        setPedidos(Array.isArray(pedidosData) ? pedidosData : []);
-        setPedidoPersonalizado(Array.isArray(personalizadoData) ? personalizadoData : []);
-    };
-    fetchPedidos();
+        AsyncStorage.getItem("clienteId").then((id) => {
+            setClienteId(id);
+        });
     }, []);
-
-    const todosPedidos = [
-        ...pedidos.map(p => ({ ...p, tipo: "normal" })),
-        ...pedidoPersonalizado.map(p => ({ ...p, tipo: "personalizado" })),
-    ]
     useEffect (()=>{
         if(!clienteId) return;
         async function fetchPedidos(){
@@ -60,7 +41,7 @@ export default function MeusPedidos(){
         }
         fetchPedidos();
     }, [clienteId]);
-    if (!loading) {
+    if (loading) {
         return(
             <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#ff69b4" />
@@ -111,32 +92,23 @@ export default function MeusPedidos(){
 </View>
             <View>
                 <FlatList
-  data={todosPedidos}
-  keyExtractor={(item) => item.id.toString()}
-  renderItem={({item})=>(
-    <Pressable
-      style={styles.pedidoItem}
-      onPress={() => {
-        if (item.tipo === "personalizado") {
-          router.push(`/perfils/Usuario/(drawer)/detalhePedidoPersonalizado?id=${item.id}`);
-        }
-      }}
-    >
-      <Text style={styles.label}>Pedido Nº: <Text style={styles.value}>{item.NumeroPedido || item.id}</Text></Text>
-      <Text style={styles.label}>Confeiteira: <Text style={styles.value}>{item.nomeConfeiteira || item.confeiteira?.nomeloja || "Desconhecida"}</Text></Text>
-      <Text style={styles.label}>Data: <Text style={styles.value}>{item.dataPedido ? new Date(item.dataPedido).toLocaleDateString() : ""}</Text></Text>
-      <Text style={styles.label}>Total: R$ <Text style={styles.value}>{item.valorTotal ? item.valorTotal.toFixed(2) : "0.00"}</Text></Text>
-      <Text style={styles.label}>Status: <Text style={styles.value}>{item.status}</Text></Text>
-      <Text style={styles.label}>Tipo: <Text style={styles.value}>{item.tipo === "personalizado" ? "Personalizado" : "Normal"}</Text></Text>
-      <TouchableOpacity
-        style={{ position: "absolute", top: 10, right: 10 }}
-        onPress={() => excluirPedido(item.id)}
-      >
-        <Ionicons name="trash" size={24} color="red" />
-      </TouchableOpacity>
-    </Pressable>
-  )}
-/>
+                data = {pedidos}
+                keyExtractor={(item) => item.id.toString()}
+                renderItem={({item})=>(
+                     <Pressable style={styles.pedidoItem}>
+            <Text style={styles.label}>Pedido Nº: <Text style={styles.value}>{item.NumeroPedido}</Text></Text>
+            <Text style={styles.label}>Confeiteira: <Text style={styles.value}>{item.nomeConfeiteira || item.confeiteira?.nomeloja || "Desconhecida"}</Text></Text>
+            <Text style={styles.label}>Data: <Text style={styles.value}>{item.dataPedido ? new Date(item.dataPedido).toLocaleDateString() : ""}</Text></Text>
+            <Text style={styles.label}>Total: R$ <Text style={styles.value}>{item.valorTotal ? item.valorTotal.toFixed(2) : "0.00"}</Text></Text>
+            <Text style={styles.label}>Status: <Text style={styles.value}>{item.status}</Text></Text>
+            <TouchableOpacity
+    style={{ position: "absolute", top: 10, right: 10 }}
+    onPress={() => excluirPedido(item.id)}
+  >
+    <Ionicons name="trash" size={24} color="red" />
+  </TouchableOpacity>
+          </Pressable>
+        )}/>
             </View>
         </View>
     )

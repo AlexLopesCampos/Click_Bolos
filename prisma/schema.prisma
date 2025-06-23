@@ -89,7 +89,7 @@ model Pedido {
   nomeConfeiteira     String
   endereco      String
   dataPedido    DateTime
-  nomeloja     String
+  nomeloja     String?
   valorTotal    Float
   status        String
   pagamento     String

@@ -7,8 +7,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const massas = ["Pão de Ló", "Chocolate", "Red Velvet", "Baunilha", "Nozes"];
 const recheios = [
-
-    "Brigadeiro", "Doce de Leite", "Ninho", "Morango", "Coco",
+  "Brigadeiro", "Doce de Leite", "Ninho", "Morango", "Coco",
   "Mousse de Maracujá", "Mousse de Limão", "Mousse de Chocolate",
   "Mousse de Morango", "Mousse de Leite Ninho", "Nutella",
   "Abacaxi com Coco", "Prestígio", "Beijinho", "Ovomaltine",
@@ -32,13 +31,12 @@ export default function PedidosPersonalizados() {
   const [horaEntrega, setHoraEntrega] = useState(new Date());
   const [showHora, setShowHora] = useState(false);
 
-   async function enviarPedido() {
+  async function enviarPedido() {
     if (!massa || !recheio || !cobertura) {
       Alert.alert("Preencha todos os campos obrigatórios!");
       return;
     }
 
-    // Busca o id do cliente logado
     const clienteId = await AsyncStorage.getItem("clienteId");
     if (!clienteId) {
       Alert.alert("Erro", "Usuário não identificado.");
@@ -48,19 +46,6 @@ export default function PedidosPersonalizados() {
     try {
       const dataEntregaISO = dataEntrega.toISOString();
       const horaEntregaStr = `${horaEntrega.getHours().toString().padStart(2, "0")}:${horaEntrega.getMinutes().toString().padStart(2, "0")}`;
-
-      console.log({
-        clienteId,
-        confeiteiraId: id,
-        massa,
-        recheio,
-        cobertura,
-        camadas: numCamadas,
-        topo,
-        observacoes,
-        dataEntrega: dataEntregaISO,
-        horaEntrega: horaEntregaStr
-      });
 
       const response = await fetch("http://localhost:8081/pedidos-personalizados", {
         method: "POST",
@@ -89,8 +74,6 @@ export default function PedidosPersonalizados() {
     } catch (error) {
       Alert.alert("Erro", "Não foi possível enviar o pedido.");
     }
-
-    console.log({ clienteId, confeiteiraId: id, massa, recheio, cobertura, camadas: numCamadas, topo, observacoes, dataEntrega, horaEntrega });
   }
 
   return (
@@ -99,7 +82,7 @@ export default function PedidosPersonalizados() {
         style={{ marginBottom: 16, alignSelf: "flex-start", padding: 8 }}
         onPress={() => router.back()}
       >
-        <Text style={{ color: "#007bff", fontWeight: "bold" }}>← Voltar para o perfil</Text>
+        <Text style={{ color: "#7e57c2", fontWeight: "bold" }}>← Voltar para o perfil</Text>
       </TouchableOpacity>
 
       <Text style={styles.titulo}>Monte seu Bolo Personalizado</Text>
@@ -119,11 +102,7 @@ export default function PedidosPersonalizados() {
 
       <Text style={styles.label}>Recheio *</Text>
       <View style={styles.pickerBox}>
-        <Picker
-          selectedValue={recheio}
-          onValueChange={setRecheio}
-          style={styles.picker}
-        >
+        <Picker selectedValue={recheio} onValueChange={setRecheio} style={styles.picker}>
           <Picker.Item label="Selecione o recheio" value="" />
           {recheios.map((r) => (
             <Picker.Item key={r} label={r} value={r} />
@@ -182,10 +161,7 @@ export default function PedidosPersonalizados() {
           style={{ ...styles.input, width: "100%" }}
         />
       ) : (
-        <TouchableOpacity
-          style={styles.input}
-          onPress={() => setShowDate(true)}
-        >
+        <TouchableOpacity style={styles.input} onPress={() => setShowDate(true)}>
           <Text>{dataEntrega.toLocaleDateString()}</Text>
         </TouchableOpacity>
       )}
@@ -201,15 +177,11 @@ export default function PedidosPersonalizados() {
         />
       )}
 
-      <Text style={styles.label}>Hora de Entrega</Text>
+      <Text style={styles.label}>Horario de Entrega</Text>
       {Platform.OS === "web" ? (
         <input
           type="time"
-          value={
-            horaEntrega
-              ? `${horaEntrega.getHours().toString().padStart(2, "0")}:${horaEntrega.getMinutes().toString().padStart(2, "0")}`
-              : ""
-          }
+          value={`${horaEntrega.getHours().toString().padStart(2, "0")}:${horaEntrega.getMinutes().toString().padStart(2, "0")}`}
           onChange={e => {
             const [h, m] = e.target.value.split(":");
             const novaHora = new Date(dataEntrega);
@@ -220,10 +192,7 @@ export default function PedidosPersonalizados() {
           style={{ ...styles.input, width: "100%" }}
         />
       ) : (
-        <TouchableOpacity
-          style={styles.input}
-          onPress={() => setShowHora(true)}
-        >
+        <TouchableOpacity style={styles.input} onPress={() => setShowHora(true)}>
           <Text>
             {horaEntrega.getHours().toString().padStart(2, "0")}:
             {horaEntrega.getMinutes().toString().padStart(2, "0")}
@@ -259,15 +228,83 @@ export default function PedidosPersonalizados() {
 }
 
 const styles = StyleSheet.create({
-  container: { padding: 16, backgroundColor: "#fff", flexGrow: 1 },
-  titulo: { fontSize: 22, fontWeight: "bold", marginBottom: 16, textAlign: "center" },
-  label: { fontWeight: "bold", marginTop: 12 },
-  opcoes: { flexDirection: "row", flexWrap: "wrap", marginVertical: 6 },
-  opcao: { padding: 8, borderWidth: 1, borderColor: "#ccc", borderRadius: 8, marginRight: 8, marginBottom: 8 },
-  opcaoSelecionada: { backgroundColor: "#ffe4e1", borderColor: "#ff69b4" },
-  input: { borderWidth: 1, borderColor: "#ccc", borderRadius: 8, padding: 8, marginTop: 4, marginBottom: 8 },
-  botao: { backgroundColor: "#ff69b4", padding: 14, borderRadius: 8, alignItems: "center", marginTop: 20 },
-  botaoTexto: { color: "#fff", fontWeight: "bold", fontSize: 16 },
-  pickerBox: { borderWidth: 1, borderColor: "#ccc", borderRadius: 8, marginBottom: 8 },
-  picker: { height: 44, width: "100%" },
-})
+  container: {
+    padding: 16,
+    backgroundColor: "#fdf6f0", // fundo creme
+    flexGrow: 1
+  },
+  titulo: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 20,
+    textAlign: "center",
+    color: "#6A1B9A" // roxo forte
+  },
+  label: {
+    fontWeight: "bold",
+    marginTop: 12,
+    color: "#6A1B9A",
+    fontSize: 16
+  },
+  opcoes: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    marginVertical: 6
+  },
+  opcao: {
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderWidth: 1,
+    borderColor: "#D1B2FF",
+    borderRadius: 12,
+    marginRight: 8,
+    marginBottom: 8,
+    backgroundColor: "#fff",
+    elevation: 1
+  },
+  opcaoSelecionada: {
+    backgroundColor: "#A0522D", // chocolate médio
+    borderColor: "#5D3A00" // chocolate escuro
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#D1B2FF",
+    borderRadius: 12,
+    padding: 10,
+    marginTop: 4,
+    marginBottom: 8,
+    backgroundColor: "#fff",
+    color: "#4E342E",
+    fontSize: 16
+  },
+  botao: {
+    backgroundColor: "#4A148C", // sroxo escuro no botão
+    padding: 16,
+    borderRadius: 12,
+    alignItems: "center",
+    marginTop: 24,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3
+  },
+  botaoTexto: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 18
+  },
+  pickerBox: {
+    borderWidth: 1,
+    borderColor: "#D1B2FF",
+    borderRadius: 12,
+    marginBottom: 8,
+    backgroundColor: "#fff"
+  },
+  picker: {
+    height: 48,
+    width: "100%",
+    color: "#4E342E",
+    fontSize: 16
+  }
+});

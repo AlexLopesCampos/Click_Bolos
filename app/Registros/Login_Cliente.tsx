@@ -48,7 +48,7 @@ export default function Login_Usuarios() {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       style={styles.container}
     >
-      <Text style={styles.title}>🍰Olá, Cliente! esperamos que goste dos docinhos🍩</Text>
+      <Text style={styles.title}>🍰Olá, Cliente! Escolha, personalize e delicie-se. Simples assim!🍩</Text>
       <Text style={styles.subtitle}>Acesse sua conta e aproveite nossas delícias!</Text>
 
       <TextInput

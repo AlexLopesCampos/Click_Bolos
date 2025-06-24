@@ -236,20 +236,20 @@ export default function PerfilConfeteira() {
       {catalogo.length === 0 ? (
         <Text style={styles.semConteudo}>Nenhum bolo cadastrado no catálogo.</Text>
       ) : (
-        <FlatList
-          data={catalogo}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
-            <Pressable onPress={() => router.push(`../pedidos?id=${item.id}`)}>
+        <View>
+          {catalogo.map((item) => (
+            <Pressable key={item.id} onPress={() => router.push(`../pedidos?id=${item.id}`)}>
               <View style={styles.item}>
                 <Image source={{ uri: item.imagem }} style={styles.itemImagem} />
-                <Text style={styles.itemNome}>{item.nome}</Text>
-                <Text style={styles.itemDescricao}>{item.descricao}</Text>
-                <Text style={styles.itemPreco}>Preço: R$ {item.preco}</Text>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.itemNome}>{item.nome}</Text>
+                  <Text style={styles.itemDescricao}>{item.descricao}</Text>
+                  <Text style={styles.itemPreco}>Preço: R$ {item.preco}</Text>
+                </View>
               </View>
             </Pressable>
-          )}
-        />
+          ))}
+        </View>
       )}
 
       <Text style={styles.catalogoTitulo}>Avaliações:</Text>
@@ -337,34 +337,39 @@ const styles = StyleSheet.create({
     color: "#C2185B",
   },
   item: {
-    backgroundColor: "#FFF",
-    borderRadius: 14,
-    padding: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#fce7f3",
+    padding: 12,
+    borderRadius: 12,
     marginBottom: 12,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 2,
+    borderWidth: 1,
+    borderColor: "#a05060",
+    minHeight: 200,
+    maxHeight: 500,
   },
   itemImagem: {
-    width: "100%",
-    height: 180,
-    borderRadius: 10,
+    width: 200,
+    height: 200,
+    borderRadius: 12,
+    marginRight: 14,
+    alignSelf: "center",
+    resizeMode: "cover",
+    backgroundColor: "#fff0f6",
   },
   itemNome: {
-    fontSize: 18,
     fontWeight: "bold",
-    marginTop: 8,
-    color: "#8E24AA",
+    color: "#6b1049",
+    fontSize: 17,
   },
   itemDescricao: {
+    color: "#4a0c34",
     fontSize: 14,
-    color: "#616161",
   },
   itemPreco: {
-    fontSize: 16,
-    color: "#D81B60",
+    color: "#b35a70",
+    fontWeight: "bold",
+    fontSize: 15,
     marginTop: 4,
   },
   semConteudo: {

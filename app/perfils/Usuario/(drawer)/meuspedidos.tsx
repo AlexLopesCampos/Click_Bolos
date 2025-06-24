@@ -1,9 +1,9 @@
+import React, { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { use, useEffect, useState } from "react";
 import { FlatList, Pressable, Text, View, ActivityIndicator, StyleSheet, Alert, TouchableOpacity } from "react-native";
 import { Ionicons } from '@expo/vector-icons';
 
-export default function MeusPedidos(){
+export default function MeusPedidos() {
     interface Pedido {
         id: number | string;
         NumeroPedido: number | string;
@@ -14,11 +14,10 @@ export default function MeusPedidos(){
         confeiteira?: {
             nomeloja?: string;
         };
-        // add other properties as needed
     }
 
     const [pedidos, setPedidos] = useState<Pedido[]>([]);
-    const [loading, setLoading] = useState (true);
+    const [loading, setLoading] = useState(true);
     const [clienteId, setClienteId] = useState<string | null>(null);
 
     useEffect(() => {
@@ -26,39 +25,29 @@ export default function MeusPedidos(){
             setClienteId(id);
         });
     }, []);
-    useEffect (()=>{
-        if(!clienteId) return;
-        async function fetchPedidos(){
-            try{
-                const response = await fetch(`http://localhost:8081/clientes/${clienteId}/pedidos`);
-                const data =  await response.json();
-                setPedidos(data);
-            }catch (error) {
+
+    useEffect(() => {
+        if (!clienteId) return;
+        async function fetchPedidos() {
+            try {
+                const response = await fetch(`http://localhost:8081/cliente/${clienteId}/pedidos`);
+                const data = await response.json();
+                setPedidos(Array.isArray(data) ? data : []);
+            } catch (error) {
                 console.error("Erro ao buscar pedidos:", error);
-            }finally{
+            } finally {
                 setLoading(false);
             }
         }
         fetchPedidos();
     }, [clienteId]);
-    if (loading) {
-        return(
-            <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#ff69b4" />
-        <Text>Carregando pedidos...</Text>
-      </View>
-    );
-    }
 
     const excluirPedido = async (id: number | string) => {
         Alert.alert(
             "Excluir Pedido",
             "Você tem certeza que deseja excluir este pedido?",
             [
-                {
-                    text: "Cancelar",
-                    style: "cancel"
-                },
+                { text: "Cancelar", style: "cancel" },
                 {
                     text: "Excluir",
                     onPress: async () => {
@@ -71,7 +60,7 @@ export default function MeusPedidos(){
                                 Alert.alert("Sucesso", "Pedido excluído com sucesso.");
                             } else if (response.status === 404) {
                                 Alert.alert("Aviso", "Este pedido já foi removido ou não existe.");
-                                setPedidos(pedidos.filter(pedido => pedido.id !== id)); // Remove da tela mesmo assim
+                                setPedidos(pedidos.filter(pedido => pedido.id !== id));
                             } else {
                                 Alert.alert("Erro", "Não foi possível excluir o pedido.");
                             }
@@ -82,57 +71,101 @@ export default function MeusPedidos(){
                     }
                 }
             ]
-        )
+        );
+    };
+
+    if (loading) {
+        return (
+            <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color="#ff69b4" />
+                <Text>Carregando pedidos...</Text>
+            </View>
+        );
     }
 
-    return(
-        <View>
-            <View style={{ alignItems: "center", marginVertical: 10 }}>
-  <Text style={styles.title}>Meus Pedidos</Text>
-</View>
-            <View>
-                <FlatList
-                data = {pedidos}
+    return (
+        <View style={styles.container}>
+            <Text style={styles.title}>Meus Pedidos</Text>
+            <FlatList
+                data={pedidos}
                 keyExtractor={(item) => item.id.toString()}
-                renderItem={({item})=>(
-                     <Pressable style={styles.pedidoItem}>
-            <Text style={styles.label}>Pedido Nº: <Text style={styles.value}>{item.NumeroPedido}</Text></Text>
-            <Text style={styles.label}>Confeiteira: <Text style={styles.value}>{item.nomeConfeiteira || item.confeiteira?.nomeloja || "Desconhecida"}</Text></Text>
-            <Text style={styles.label}>Data: <Text style={styles.value}>{item.dataPedido ? new Date(item.dataPedido).toLocaleDateString() : ""}</Text></Text>
-            <Text style={styles.label}>Total: R$ <Text style={styles.value}>{item.valorTotal ? item.valorTotal.toFixed(2) : "0.00"}</Text></Text>
-            <Text style={styles.label}>Status: <Text style={styles.value}>{item.status}</Text></Text>
-            <TouchableOpacity
-    style={{ position: "absolute", top: 10, right: 10 }}
-    onPress={() => excluirPedido(item.id)}
-  >
-    <Ionicons name="trash" size={24} color="red" />
-  </TouchableOpacity>
-          </Pressable>
-        )}/>
-            </View>
+                ListEmptyComponent={<Text style={styles.value}>Nenhum pedido encontrado.</Text>}
+                renderItem={({ item }) => (
+                    <Pressable style={styles.pedidoItem}>
+                        <Text style={styles.label}>
+                            Pedido Nº: <Text style={styles.value}>{item.NumeroPedido}</Text>
+                        </Text>
+                        <Text style={styles.label}>
+                            Confeiteira: <Text style={styles.value}>{item.nomeConfeiteira || item.confeiteira?.nomeloja || "Desconhecida"}</Text>
+                        </Text>
+                        <Text style={styles.label}>
+                            Data: <Text style={styles.value}>{item.dataPedido ? new Date(item.dataPedido).toLocaleDateString() : ""}</Text>
+                        </Text>
+                        <Text style={styles.label}>
+                            Total: R$ <Text style={styles.value}>{item.valorTotal ? Number(item.valorTotal).toFixed(2) : "0.00"}</Text>
+                        </Text>
+                        <Text style={styles.label}>
+                            Status: <Text style={styles.status}>{item.status}</Text>
+                        </Text>
+                        <TouchableOpacity
+                            style={styles.trashButton}
+                            onPress={() => excluirPedido(item.id)}
+                        >
+                            <Ionicons name="trash" size={24} color="red" />
+                        </TouchableOpacity>
+                    </Pressable>
+                )}
+            />
         </View>
-    )
+    );
 }
+
 const styles = StyleSheet.create({
-  container: { padding: 20 },
-  title: { fontSize: 22, fontWeight: 'bold', marginBottom: 10 },
-  pedidoItem: {
-    backgroundColor: '#f9f9f9',
-    padding: 15,
-    marginBottom: 10,
-    borderRadius: 10,
-    elevation: 2,
-  },
-  label: {
-    fontWeight: '600',
-    marginBottom: 4,
-  },
-  value: {
-    fontWeight: 'normal',
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
+    container: {
+        flex: 1,
+        padding: 16,
+        backgroundColor: "#ffe6f0",
+    },
+    title: {
+        fontSize: 22,
+        fontWeight: "bold",
+        marginBottom: 16,
+        color: "#6b1049",
+        textAlign: "center",
+    },
+    pedidoItem: {
+        backgroundColor: "#fce7f3",
+        padding: 16,
+        borderRadius: 12,
+        marginBottom: 14,
+        borderWidth: 1,
+        borderColor: "#a05060",
+        elevation: 2,
+        position: "relative",
+    },
+    label: {
+        fontWeight: "bold",
+        color: "#6b1049",
+        marginBottom: 2,
+    },
+    value: {
+        fontWeight: "normal",
+        color: "#4a0c34",
+    },
+    status: {
+        fontWeight: "bold",
+        marginTop: 4,
+        color: "#b35a70",
+    },
+    trashButton: {
+        position: "absolute",
+        top: 10,
+        right: 10,
+    },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "#ffe6f0",
+    },
 });

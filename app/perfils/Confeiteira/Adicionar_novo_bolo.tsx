@@ -62,6 +62,11 @@ export default function AdicionarBolos() {
       return;
     }
 
+    if (isNaN(Number(valorBolo)) || isNaN(Number(pesoBolo))) {
+      alert("Preencha o valor e o peso apenas com números (ex: 25.00, 1.2)");
+      return;
+    }
+
     const formData = new FormData();
     formData.append("nome", nomeBolo);
     formData.append("descricao", descricaoBolo);
@@ -139,18 +144,18 @@ export default function AdicionarBolos() {
       />
       <TextInput
         style={styles.input}
-        placeholder="Valor do Bolo (ex: R$ 25,00)"
+        placeholder="Valor do Bolo (ex: 25.00)"
         value={valorBolo}
-        onChangeText={text => setValorBolo(text.replace(/[^0-9R$r$,]/g, ""))}
-        keyboardType="default"
+        onChangeText={setValorBolo}
+        keyboardType="decimal-pad"
         placeholderTextColor="#A1887F"
       />
       <TextInput
         style={styles.input}
-        placeholder="Peso do Bolo (ex: 500g, 1kg)"
+        placeholder="Peso do Bolo (ex: 1.2)"
         value={pesoBolo}
         onChangeText={setPesoBolo}
-        keyboardType="default"
+        keyboardType="decimal-pad"
         placeholderTextColor="#A1887F"
       />
       <TextInput

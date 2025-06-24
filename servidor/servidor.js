@@ -224,20 +224,20 @@ app.post('/confeiteira/:id/bolo', upload.single('imagem'), async (req, res) => {
   let imagemPath = req.file ? `/uploads/${req.file.filename}` : undefined;
 
   try {
-    // Exemplo
-const confeiteiraId = Number(req.body.confeiteiraId);
+    const confeiteiraId = Number(id); // Use o id da rota!
 
-const novoBolo = await prisma.bolo.create({
-  data: {
-    nome: req.body.nome,
-    descricao: req.body.descricao,
-    preco: Number(req.body.preco),
-    peso: Number(req.body.peso),
-    sabor: req.body.sabor,
-    imagem: imagemPath,
-    confeiteiraId: confeiteiraId, // aqui sempre número!
-  }
-});
+    const novoBolo = await prisma.bolo.create({
+      data: {
+        nome,
+        descricao,
+        preco: Number(preco),
+        peso: Number(peso),
+        sabor,
+        tipo,
+        imagem: imagemPath,
+        confeiteiraId,
+      }
+    });
     res.status(201).json(novoBolo);
   } catch (error) {
     console.error('Erro ao cadastrar bolo:', error);
@@ -419,6 +419,23 @@ app.get('/cliente/:clienteId/pedidos-personalizados', async (req, res) => {
     res.status(500).json({ message: 'Erro interno do servidor' });
   }
 });
+app.get('/cliente/:clienteId/pedidos', async (req, res) => {
+  const { clienteId } = req.params;
+  try {
+    const pedidos = await prisma.pedido.findMany({
+      where: { clienteId: Number(clienteId) },
+      include: {
+        itenspedido: true,
+        confeiteira: true,
+      },
+      orderBy: { dataPedido: 'desc' }
+    });
+    res.json(pedidos);
+  } catch (error) {
+    console.error('Erro ao buscar pedidos:', error);
+    res.status(500).json({ message: 'Erro interno do servidor.' });
+  }
+});
 
 app.get('/pedidos-personalizados/:id', async (req, res) => {
   const { id } = req.params;
@@ -475,12 +492,13 @@ app.get('/clientes/:id/pedidos', async (req, res) => {
 
 app.get('/confeiteiras', async (req, res) => {
   try {
-    const confeiteiras =await prisma.confeiteira.findMany();
+    const confeiteiras = await prisma.confeiteira.findMany();
     res.json(confeiteiras);
-  }catch (error){
-    console.error('Erro ao buscar confeiteiras:',error);
+  } catch (error) {
+    console.error('Erro ao buscar confeiteiras:', error);
+    res.status(500).json({ message: 'Erro ao buscar confeiteiras.' });
   }
-})
+});
 app.get('/confeiteira/:id/avaliacoes', async(req, res) => {
   const { id } = req.params;
   try {
@@ -506,7 +524,7 @@ app.get('/confeiteira/:id', async (req, res) => {
   try {
     const confeiteira = await prisma.confeiteira.findUnique({
       where: {
-        id: Number(id) // <-- Corrigido aqui!
+        id: Number(id) // ← Converta para número!
       }
     });
     if (!confeiteira) {

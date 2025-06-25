@@ -298,7 +298,7 @@ const { width } = Dimensions.get("window");
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FFF0F5", // Rosa bem claro
+    backgroundColor: "#EDE7F6", // lilás clarinho suave
     padding: 20,
   },
   header: {
@@ -310,17 +310,17 @@ const styles = StyleSheet.create({
     height: 120,
     borderRadius: 60,
     borderWidth: 3,
-    borderColor: "#FFB6C1",
+    borderColor: "#9575CD", // roxo suave
   },
   nome: {
     fontSize: 26,
     fontWeight: "bold",
     marginTop: 10,
-    color: "#D81B60",
+    color: "#6A1B9A", // roxo escuro elegante
   },
   horarios: {
     fontSize: 14,
-    color: "#6D4C41",
+    color: "#7E57C2", // roxo médio vivo
     textAlign: "center",
   },
   descricao: {
@@ -328,22 +328,22 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 20,
     textAlign: "center",
-    color: "#5D4037",
+    color: "#5E35B1", // roxo médio escuro
   },
   catalogoTitulo: {
     fontSize: 20,
     fontWeight: "600",
     marginVertical: 10,
-    color: "#C2185B",
+    color: "#7B1FA2", // roxo vibrante forte
   },
   item: {
     backgroundColor: "#FFF",
     borderRadius: 14,
     padding: 10,
     marginBottom: 12,
-    shadowColor: "#000",
+    shadowColor: "#6A1B9A",
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
+    shadowOpacity: 0.08,
     shadowRadius: 2,
     elevation: 2,
   },
@@ -356,41 +356,41 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     marginTop: 8,
-    color: "#8E24AA",
+    color: "#7E57C2", // roxo médio vivo
   },
   itemDescricao: {
     fontSize: 14,
-    color: "#616161",
+    color: "#6A1B9A", // roxo escuro elegante
   },
   itemPreco: {
     fontSize: 16,
-    color: "#D81B60",
+    color: "#4A148C", // roxo profundo
     marginTop: 4,
   },
   semConteudo: {
     fontStyle: "italic",
-    color: "#999",
+    color: "#B39DDB", // lilás claro
     marginBottom: 10,
   },
   avaliacaoItem: {
     marginVertical: 8,
     borderBottomWidth: 1,
-    borderColor: "#eee",
+    borderColor: "#D1C4E9", // lilás bem claro
     paddingBottom: 8,
   },
   avaliador: {
     fontWeight: "bold",
-    color: "#5D4037",
+    color: "#6A1B9A", // roxo escuro elegante
   },
   dataComentario: {
     fontSize: 12,
-    color: "gray",
+    color: "#9575CD", // roxo suave
   },
   avaliacaoBox: {
     marginTop: 20,
     paddingTop: 10,
     borderTopWidth: 1,
-    borderTopColor: "#ddd",
+    borderTopColor: "#D1C4E9", // lilás bem claro
   },
   estrelas: {
     flexDirection: "row",
@@ -398,12 +398,13 @@ const styles = StyleSheet.create({
   },
   inputComentario: {
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: "#9575CD", // roxo suave
     padding: 8,
     borderRadius: 6,
+    backgroundColor: "#F3E5F5", // lilás bem clarinho
   },
   botaoEnviar: {
-    backgroundColor: "#EC407A",
+    backgroundColor: "#7B1FA2", // roxo vibrante forte
     padding: 10,
     borderRadius: 8,
     marginTop: 10,

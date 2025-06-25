@@ -1,8 +1,10 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { Alert, Button, Text, TouchableOpacity, View, StyleSheet } from "react-native";
+import { Alert, Button, Text, TouchableOpacity, View, StyleSheet, Dimensions, Image } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
+
+const largura = Dimensions.get("window").width - 40; // 40 = padding horizontal do container
 
 export default function Pedidos() {
   const { id } = useLocalSearchParams();
@@ -19,6 +21,7 @@ export default function Pedidos() {
     nomeConfeiteira: string;
     confeiteiraId: number;
     id: number;
+    imagem?: string;
   } | null>(null);
 
   useEffect(() => {
@@ -129,72 +132,92 @@ export default function Pedidos() {
 
   return (
     <View style={styles.container}>
+        {bolo && bolo.imagem && (
+            <Image
+              source={{ uri: `http://localhost:8081${bolo.imagem}` }}
+              style={{
+                width: largura,
+                height: 200,
+                borderRadius: 12,
+                marginBottom: 16,
+                backgroundColor: "#eee",
+                alignSelf: "center",
+              }}
+              resizeMode="cover" // ou "contain" se quiser ver tudo mesmo que fique com barras
+            />
+          )}
+
       {bolo && (
         <>
-          <Text style={styles.titulo}>{bolo.nome}</Text>
-          <Text style={styles.valor}>Preço por Kg: R$ {bolo.preco.toFixed(2)}</Text>
+          {/* Centraliza as informações principais */}
+          <View style={{ alignItems: "center", width: "100%" }}>
+            <Text style={styles.titulo}>{bolo.nome}</Text>
+            <Text style={styles.valor}>Preço por Kg: R$ {bolo.preco.toFixed(2)}</Text>
 
-          <Text style={styles.label}>Quantidade (Kg):</Text>
-          <View style={styles.kgContainer}>
-            <TouchableOpacity style={styles.kgButton} onPress={diminuirKg}>
-              <Text style={styles.kgButtonText}>-</Text>
-            </TouchableOpacity>
-            <Text style={styles.kgText}>{quantidadeKg} Kg</Text>
-            <TouchableOpacity style={styles.kgButton} onPress={aumentarKg}>
-              <Text style={styles.kgButtonText}>+</Text>
-            </TouchableOpacity>
-          </View>
-
-          <Text style={styles.valor}>Valor total: R$ {valorTotal.toFixed(2)}</Text>
-
-          <Text style={styles.label}>Forma de Pagamento:</Text>
-          <View style={styles.pagamentoContainer}>
-            {["Pix", "Crédito", "Débito", "Dinheiro"].map((forma) => (
-              <TouchableOpacity
-                key={forma}
-                style={[
-                  styles.pagamentoButton,
-                  formadepagamento === forma && styles.pagamentoButtonAtivo,
-                ]}
-                onPress={() => setFormaDePagamento(forma)}
-              >
-                <Text
-                  style={[
-                    styles.pagamentoButtonText,
-                    formadepagamento === forma && styles.pagamentoButtonTextAtivo,
-                  ]}
-                >
-                  {forma}
-                </Text>
+            <Text style={styles.label}>Quantidade (Kg):</Text>
+            <View style={styles.kgContainer}>
+              <TouchableOpacity style={styles.kgButton} onPress={diminuirKg}>
+                <Text style={styles.kgButtonText}>-</Text>
               </TouchableOpacity>
-            ))}
+              <Text style={styles.kgText}>{quantidadeKg} Kg</Text>
+              <TouchableOpacity style={styles.kgButton} onPress={aumentarKg}>
+                <Text style={styles.kgButtonText}>+</Text>
+              </TouchableOpacity>
+            </View>
+
+            <Text style={styles.valor}>Valor total: R$ {valorTotal.toFixed(2)}</Text>
+
+            {/* Centraliza Forma de Pagamento */}
+            <Text style={[styles.label, { textAlign: "center", width: "100%" }]}>Forma de Pagamento:</Text>
+            <View style={[styles.pagamentoContainer, { justifyContent: "center" }]}>
+              {["Pix", "Crédito", "Débito", "Dinheiro"].map((forma) => (
+                <TouchableOpacity
+                  key={forma}
+                  style={[
+                    styles.pagamentoButton,
+                    formadepagamento === forma && styles.pagamentoButtonAtivo,
+                  ]}
+                  onPress={() => setFormaDePagamento(forma)}
+                >
+                  <Text
+                    style={[
+                      styles.pagamentoButtonText,
+                      formadepagamento === forma && styles.pagamentoButtonTextAtivo,
+                    ]}
+                  >
+                    {forma}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            {/* Centraliza Endereço */}
+            <Text style={[styles.label, { textAlign: "center", width: "100%" }]}>Endereço de entrega:</Text>
+            {endereco ? (
+              <Text style={[styles.endereco, { textAlign: "center", width: "100%" }]}>{endereco}</Text>
+            ) : (
+              <Text style={{ color: "#5d3a1a", textAlign: "center", width: "100%" }}>Carregando endereço...</Text>
+            )}
+
+            {/* Centraliza Data de Entrega */}
+            <Text style={[styles.label, { textAlign: "center", width: "100%" }]}>Data de Entrega:</Text>
+            <DateTimePicker
+              value={dataEntrega}
+              mode="date"
+              display="default"
+              minimumDate={new Date()}
+              onChange={(event, selectedDate) => {
+                if (selectedDate) setDataEntrega(selectedDate);
+              }}
+              style={styles.datePicker}
+            />
+
+            {entregaHoje && (
+              <Text style={styles.alertaEntregaHoje}>
+                Entrega para hoje! Será necessário confirmar disponibilidade com a confeiteira.
+              </Text>
+            )}
           </View>
-
-          <Text style={styles.label}>Endereço de entrega:</Text>
-          {endereco ? (
-            <Text style={styles.endereco}>{endereco}</Text>
-          ) : (
-            <Text style={{ color: "#5d3a1a" }}>Carregando endereço...</Text>
-          )}
-
-          <Text style={styles.label}>Data de Entrega:</Text>
-          <DateTimePicker
-            value={dataEntrega}
-            mode="date"
-            display="default"
-            minimumDate={new Date()}
-            onChange={(event, selectedDate) => {
-              if (selectedDate) setDataEntrega(selectedDate);
-            }}
-            style={styles.datePicker}
-          />
-
-          {entregaHoje && (
-            <Text style={styles.alertaEntregaHoje}>
-              Entrega para hoje! Será necessário confirmar disponibilidade com a confeiteira.
-            </Text>
-          )}
-
           <TouchableOpacity style={styles.confirmarBtn} onPress={ConfirmarPedidos}>
             <Text style={styles.confirmarBtnText}>Confirmar Pedido</Text>
           </TouchableOpacity>

@@ -24,6 +24,7 @@ export default function AdicionarBolos() {
   const [pesoBolo, setPesoBolo] = useState("");
   const [saborBolo, setSaborBolo] = useState("");
   const [imagemArquivo, setImagemArquivo] = useState<File | null>(null);
+  const [unidadePeso, setUnidadePeso] = useState<"g" | "Kg">("g"); // Unidade de peso padrão
 
   const selecionarImagem = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -112,7 +113,7 @@ export default function AdicionarBolos() {
       }
 
       alert("Bolo adicionado com sucesso!");
-      router.push(`./Confeiteira/perfilConfeiteiras/${id}`);
+      router.push(`/perfils/Confeiteira/${id}`);
     } catch (error) {
       console.error("Erro ao adicionar bolo:", error);
       alert("Erro ao adicionar bolo.");
@@ -141,18 +142,54 @@ export default function AdicionarBolos() {
         style={styles.input}
         placeholder="Valor do Bolo (ex: R$ 25,00)"
         value={valorBolo}
-        onChangeText={text => setValorBolo(text.replace(/[^0-9R$r$,]/g, ""))}
-        keyboardType="default"
+        onChangeText={text => {
+          let onlyNums = text.replace(/\D/g, "");
+          let formatted = "";
+          if (onlyNums.length === 0) {
+            formatted = "";
+          } else if (onlyNums.length === 1) {
+            formatted = "R$ 0,0" + onlyNums;
+          } else if (onlyNums.length === 2) {
+            formatted = "R$ 0," + onlyNums;
+          } else {
+            // Remove zeros à esquerda dos reais
+            let reais = onlyNums.slice(0, onlyNums.length - 2).replace(/^0+/, "") || "0";
+            let centavos = onlyNums.slice(-2);
+            formatted = "R$ " + reais + "," + centavos;
+          }
+          setValorBolo(formatted);
+        }}
+        keyboardType="numeric"
         placeholderTextColor="#A1887F"
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Peso do Bolo (ex: 500g, 1kg)"
-        value={pesoBolo}
-        onChangeText={setPesoBolo}
-        keyboardType="default"
-        placeholderTextColor="#A1887F"
-      />
+      <View style={{ flexDirection: "row", alignItems: "center", width: "100%" }}>
+        <TextInput
+          style={[styles.input, { flex: 1, marginRight: 8 }]}
+          placeholder="Peso do Bolo"
+          value={pesoBolo}
+          onChangeText={text => setPesoBolo(text.replace(/\D/g, ""))}
+          keyboardType="numeric"
+          placeholderTextColor="#A1887F"
+        />
+        <TouchableOpacity
+          style={[
+            styles.unidadeBtn,
+            unidadePeso === "g" && styles.unidadeBtnAtivo
+          ]}
+          onPress={() => setUnidadePeso("g")}
+        >
+          <Text style={unidadePeso === "g" ? styles.unidadeBtnTextAtivo : styles.unidadeBtnText}>g</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.unidadeBtn,
+            unidadePeso === "Kg" && styles.unidadeBtnAtivo
+          ]}
+          onPress={() => setUnidadePeso("Kg")}
+        >
+          <Text style={unidadePeso === "Kg" ? styles.unidadeBtnTextAtivo : styles.unidadeBtnText}>Kg</Text>
+        </TouchableOpacity>
+      </View>
       <TextInput
         style={styles.input}
         placeholder="Sabor do Bolo"
@@ -198,7 +235,7 @@ export default function AdicionarBolos() {
 
       <TouchableOpacity
         style={[styles.submitButton, { backgroundColor: "#F8BBD0" }]}
-        onPress={() => router.push(`./perfilConfeiteiras/${id}`)}
+        onPress={() => router.push(`/perfils/Confeiteira/${id}`)}
       >
         <Text style={[styles.submitButtonText, { color: "#6D4C41" }]}>Cancelar</Text>
       </TouchableOpacity>
@@ -283,5 +320,25 @@ const styles = StyleSheet.create({
     color: "#FFF",
     fontSize: 17,
     fontWeight: "bold",
+  },
+  unidadeBtn: {
+    backgroundColor: "#F8BBD0",
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    borderRadius: 8,
+    marginLeft: 2,
+  },
+  unidadeBtnAtivo: {
+    backgroundColor: "#C71585",
+  },
+  unidadeBtnText: {
+    color: "#6D4C41",
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+  unidadeBtnTextAtivo: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 16,
   },
 });

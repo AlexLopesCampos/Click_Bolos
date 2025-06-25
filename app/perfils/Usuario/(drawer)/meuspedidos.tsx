@@ -1,9 +1,9 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { FlatList, Pressable, Text, View, ActivityIndicator, StyleSheet, Alert, TouchableOpacity } from "react-native";
 import { Ionicons } from '@expo/vector-icons';
 
-export default function MeusPedidos(){
+export default function MeusPedidos() {
     interface Pedido {
         id: number | string;
         NumeroPedido: number | string;
@@ -14,11 +14,10 @@ export default function MeusPedidos(){
         confeiteira?: {
             nomeloja?: string;
         };
-        // add other properties as needed
     }
 
     const [pedidos, setPedidos] = useState<Pedido[]>([]);
-    const [loading, setLoading] = useState (true);
+    const [loading, setLoading] = useState(true);
     const [clienteId, setClienteId] = useState<string | null>(null);
 
     useEffect(() => {
@@ -26,28 +25,28 @@ export default function MeusPedidos(){
             setClienteId(id);
         });
     }, []);
-    useEffect (()=>{
-        if(!clienteId) return;
-        async function fetchPedidos(){
-            try{
+    useEffect(() => {
+        if (!clienteId) return;
+        async function fetchPedidos() {
+            try {
                 const response = await fetch(`http://localhost:8081/clientes/${clienteId}/pedidos`);
-                const data =  await response.json();
+                const data = await response.json();
                 setPedidos(data);
-            }catch (error) {
+            } catch (error) {
                 console.error("Erro ao buscar pedidos:", error);
-            }finally{
+            } finally {
                 setLoading(false);
             }
         }
         fetchPedidos();
     }, [clienteId]);
     if (loading) {
-        return(
+        return (
             <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#ff69b4" />
-        <Text>Carregando pedidos...</Text>
-      </View>
-    );
+                <ActivityIndicator size="large" color="#7E57C2" />
+                <Text style={{ color: "#6A1B9A", marginTop: 10 }}>Carregando pedidos...</Text>
+            </View>
+        );
     }
 
     const excluirPedido = async (id: number | string) => {
@@ -71,7 +70,7 @@ export default function MeusPedidos(){
                                 Alert.alert("Sucesso", "Pedido excluído com sucesso.");
                             } else if (response.status === 404) {
                                 Alert.alert("Aviso", "Este pedido já foi removido ou não existe.");
-                                setPedidos(pedidos.filter(pedido => pedido.id !== id)); // Remove da tela mesmo assim
+                                setPedidos(pedidos.filter(pedido => pedido.id !== id));
                             } else {
                                 Alert.alert("Erro", "Não foi possível excluir o pedido.");
                             }
@@ -85,54 +84,83 @@ export default function MeusPedidos(){
         )
     }
 
-    return(
-        <View>
+    return (
+        <View style={styles.container}>
             <View style={{ alignItems: "center", marginVertical: 10 }}>
-  <Text style={styles.title}>Meus Pedidos</Text>
-</View>
-            <View>
-                <FlatList
-                data = {pedidos}
-                keyExtractor={(item) => item.id.toString()}
-                renderItem={({item})=>(
-                     <Pressable style={styles.pedidoItem}>
-            <Text style={styles.label}>Pedido Nº: <Text style={styles.value}>{item.NumeroPedido}</Text></Text>
-            <Text style={styles.label}>Confeiteira: <Text style={styles.value}>{item.nomeConfeiteira || item.confeiteira?.nomeloja || "Desconhecida"}</Text></Text>
-            <Text style={styles.label}>Data: <Text style={styles.value}>{item.dataPedido ? new Date(item.dataPedido).toLocaleDateString() : ""}</Text></Text>
-            <Text style={styles.label}>Total: R$ <Text style={styles.value}>{item.valorTotal ? item.valorTotal.toFixed(2) : "0.00"}</Text></Text>
-            <Text style={styles.label}>Status: <Text style={styles.value}>{item.status}</Text></Text>
-            <TouchableOpacity
-    style={{ position: "absolute", top: 10, right: 10 }}
-    onPress={() => excluirPedido(item.id)}
-  >
-    <Ionicons name="trash" size={24} color="red" />
-  </TouchableOpacity>
-          </Pressable>
-        )}/>
+                <Text style={styles.title}>Meus Pedidos</Text>
             </View>
+            <FlatList
+                data={pedidos}
+                keyExtractor={(item) => item.id.toString()}
+                renderItem={({ item }) => (
+                    <Pressable style={styles.pedidoItem}>
+                        <Text style={styles.label}>Pedido Nº: <Text style={styles.value}>{item.NumeroPedido}</Text></Text>
+                        <Text style={styles.label}>Confeiteira: <Text style={styles.value}>{item.nomeConfeiteira || item.confeiteira?.nomeloja || "Desconhecida"}</Text></Text>
+                        <Text style={styles.label}>Data: <Text style={styles.value}>{item.dataPedido ? new Date(item.dataPedido).toLocaleDateString() : ""}</Text></Text>
+                        <Text style={styles.label}>Total: R$ <Text style={styles.value}>{item.valorTotal ? item.valorTotal.toFixed(2) : "0.00"}</Text></Text>
+                        <Text style={styles.label}>Status: <Text style={styles.value}>{item.status}</Text></Text>
+                        <TouchableOpacity
+                            style={styles.trashButton}
+                            onPress={() => excluirPedido(item.id)}
+                        >
+                            <Ionicons name="trash" size={24} color="#D81B60" />
+                        </TouchableOpacity>
+                    </Pressable>
+                )}
+            />
         </View>
     )
 }
+
 const styles = StyleSheet.create({
-  container: { padding: 20 },
-  title: { fontSize: 22, fontWeight: 'bold', marginBottom: 10 },
-  pedidoItem: {
-    backgroundColor: '#f9f9f9',
-    padding: 15,
-    marginBottom: 10,
-    borderRadius: 10,
-    elevation: 2,
-  },
-  label: {
-    fontWeight: '600',
-    marginBottom: 4,
-  },
-  value: {
-    fontWeight: 'normal',
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
+    container: {
+        flex: 1,
+        backgroundColor: '#EDE7F6', // lilás clarinho suave
+        padding: 24,
+    },
+    title: {
+        fontSize: 24,
+        fontWeight: '700',
+        color: '#6A1B9A', // roxo escuro elegante
+        marginBottom: 16,
+        textAlign: 'center',
+        letterSpacing: 1,
+    },
+    pedidoItem: {
+        backgroundColor: '#FFF',
+        borderColor: '#9575CD', // borda roxa suave
+        borderWidth: 1.5,
+        borderRadius: 16,
+        padding: 18,
+        marginBottom: 14,
+        shadowColor: '#6A1B9A',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.10,
+        shadowRadius: 8,
+        elevation: 3,
+        position: "relative",
+    },
+    label: {
+        fontWeight: '700',
+        color: '#7E57C2', // roxo médio vivo
+        marginBottom: 2,
+        fontSize: 16,
+    },
+    value: {
+        fontWeight: '400',
+        color: '#4A148C', // roxo profundo
+        fontSize: 16,
+    },
+    trashButton: {
+        position: "absolute",
+        top: 10,
+        right: 10,
+        padding: 4,
+    },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "#EDE7F6",
+    },
 });

@@ -147,7 +147,6 @@ export default function AdicionarBolos() {
         style={styles.input}
         placeholder="Valor do Bolo (ex: 25.00)"
         value={valorBolo}
-<<<<<<< HEAD
         onChangeText={text => {
           let onlyNums = text.replace(/\D/g, "");
           let formatted = "";
@@ -165,9 +164,6 @@ export default function AdicionarBolos() {
           }
           setValorBolo(formatted);
         }}
-        keyboardType="numeric"
-=======
-        onChangeText={setValorBolo}
         keyboardType="decimal-pad"
         placeholderTextColor="#A1887F"
       />
@@ -177,9 +173,7 @@ export default function AdicionarBolos() {
         value={pesoBolo}
         onChangeText={setPesoBolo}
         keyboardType="decimal-pad"
->>>>>>> c6e09ec02651a12336033a8dfab041a2341267c0
-        placeholderTextColor="#A1887F"
-      />
+/>
       <View style={{ flexDirection: "row", alignItems: "center", width: "100%" }}>
         <TextInput
           style={[styles.input, { flex: 1, marginRight: 8 }]}

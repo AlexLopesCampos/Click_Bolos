@@ -343,18 +343,17 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 12,
     marginBottom: 12,
-<<<<<<< HEAD
+
     shadowColor: "#6A1B9A",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.08,
     shadowRadius: 2,
     elevation: 2,
-=======
+
     borderWidth: 1,
     borderColor: "#a05060",
     minHeight: 200,
     maxHeight: 500,
->>>>>>> c6e09ec02651a12336033a8dfab041a2341267c0
   },
   itemImagem: {
     width: 200,
@@ -367,30 +366,18 @@ const styles = StyleSheet.create({
   },
   itemNome: {
     fontWeight: "bold",
-<<<<<<< HEAD
     marginTop: 8,
-    color: "#7E57C2", // roxo médio vivo
-=======
     color: "#6b1049",
     fontSize: 17,
->>>>>>> c6e09ec02651a12336033a8dfab041a2341267c0
   },
   itemDescricao: {
-    color: "#4a0c34",
     fontSize: 14,
-<<<<<<< HEAD
     color: "#6A1B9A", // roxo escuro elegante
-  },
-  itemPreco: {
-    fontSize: 16,
-    color: "#4A148C", // roxo profundo
-=======
   },
   itemPreco: {
     color: "#b35a70",
     fontWeight: "bold",
     fontSize: 15,
->>>>>>> c6e09ec02651a12336033a8dfab041a2341267c0
     marginTop: 4,
   },
   semConteudo: {

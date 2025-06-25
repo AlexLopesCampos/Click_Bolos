@@ -236,20 +236,20 @@ export default function PerfilConfeteira() {
       {catalogo.length === 0 ? (
         <Text style={styles.semConteudo}>Nenhum bolo cadastrado no catálogo.</Text>
       ) : (
-        <FlatList
-          data={catalogo}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
-            <Pressable onPress={() => router.push(`../pedidos?id=${item.id}`)}>
+        <View>
+          {catalogo.map((item) => (
+            <Pressable key={item.id} onPress={() => router.push(`../pedidos?id=${item.id}`)}>
               <View style={styles.item}>
                 <Image source={{ uri: item.imagem }} style={styles.itemImagem} />
-                <Text style={styles.itemNome}>{item.nome}</Text>
-                <Text style={styles.itemDescricao}>{item.descricao}</Text>
-                <Text style={styles.itemPreco}>Preço: R$ {item.preco}</Text>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.itemNome}>{item.nome}</Text>
+                  <Text style={styles.itemDescricao}>{item.descricao}</Text>
+                  <Text style={styles.itemPreco}>Preço: R$ {item.preco}</Text>
+                </View>
               </View>
             </Pressable>
-          )}
-        />
+          ))}
+        </View>
       )}
 
       <Text style={styles.catalogoTitulo}>Avaliações:</Text>
@@ -337,34 +337,60 @@ const styles = StyleSheet.create({
     color: "#7B1FA2", // roxo vibrante forte
   },
   item: {
-    backgroundColor: "#FFF",
-    borderRadius: 14,
-    padding: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#fce7f3",
+    padding: 12,
+    borderRadius: 12,
     marginBottom: 12,
+<<<<<<< HEAD
     shadowColor: "#6A1B9A",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.08,
     shadowRadius: 2,
     elevation: 2,
+=======
+    borderWidth: 1,
+    borderColor: "#a05060",
+    minHeight: 200,
+    maxHeight: 500,
+>>>>>>> c6e09ec02651a12336033a8dfab041a2341267c0
   },
   itemImagem: {
-    width: "100%",
-    height: 180,
-    borderRadius: 10,
+    width: 200,
+    height: 200,
+    borderRadius: 12,
+    marginRight: 14,
+    alignSelf: "center",
+    resizeMode: "cover",
+    backgroundColor: "#fff0f6",
   },
   itemNome: {
-    fontSize: 18,
     fontWeight: "bold",
+<<<<<<< HEAD
     marginTop: 8,
     color: "#7E57C2", // roxo médio vivo
+=======
+    color: "#6b1049",
+    fontSize: 17,
+>>>>>>> c6e09ec02651a12336033a8dfab041a2341267c0
   },
   itemDescricao: {
+    color: "#4a0c34",
     fontSize: 14,
+<<<<<<< HEAD
     color: "#6A1B9A", // roxo escuro elegante
   },
   itemPreco: {
     fontSize: 16,
     color: "#4A148C", // roxo profundo
+=======
+  },
+  itemPreco: {
+    color: "#b35a70",
+    fontWeight: "bold",
+    fontSize: 15,
+>>>>>>> c6e09ec02651a12336033a8dfab041a2341267c0
     marginTop: 4,
   },
   semConteudo: {

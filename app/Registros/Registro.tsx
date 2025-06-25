@@ -8,7 +8,7 @@ export default function Registro() {
   return (
     <View style={style.container}>
 
-      <Text style={style.title}>🤎💗Seja bem-vindo! novo cliente e nova confeiteira🤎💗</Text>
+      <Text style={style.title}>🤎💗Seja bem-vindo! Novo cliente e nova confeiteira🤎💗</Text>
 
       <Text style={style.subtitle}>Escolha uma das opções abaixo para fazer parte da nossa Historia</Text>
 
